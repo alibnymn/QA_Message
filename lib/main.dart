@@ -312,11 +312,11 @@ class MessagePage extends StatefulWidget {
 class _MessagePageState extends State<MessagePage> {
   final _searchController = TextEditingController();
   List<Message> _messages = [
-    Message(text: 'Message 1'),
-    Message(text: 'Message 2'),
-    Message(text: 'Message 3'),
-    Message(text: 'Message 4'),
-    Message(text: 'Message 5'),
+    Message(text: 'Person 1', sender: 'You'),
+    Message(text: 'Person 2', sender: 'You'),
+    Message(text: 'Person 3', sender: 'You'),
+    Message(text: 'Person 4', sender: 'You'),
+    Message(text: 'Person 5', sender: 'You'),
   ];
   List<Message> _filteredMessages = [];
 
@@ -384,6 +384,11 @@ class _MessagePageState extends State<MessagePage> {
             ),
           ),
           // Chat messages
+          // Break or separator (add this)
+          Divider(
+            thickness: 1.0,
+            color: Colors.grey,
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: _filteredMessages.length,
@@ -419,16 +424,36 @@ class _MessagePageState extends State<MessagePage> {
   }
 }
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   final Message message;
 
   const ChatPage({Key? key, required this.message}) : super(key: key);
 
   @override
+  _ChatPageState createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  final TextEditingController _controller = TextEditingController();
+  List<Message> _messages = [];
+
+  void _sendMessage() {
+    if (_controller.text.isNotEmpty) {
+      setState(() {
+        _messages.add(Message(
+          text: _controller.text,
+          sender: 'You', // added sender parameter
+        ));
+      });
+      _controller.clear();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat with ${message.text}'),
+        title: Text('Chat with ${widget.message.text}'),
       ),
       body: Column(
         children: [
@@ -450,10 +475,37 @@ class ChatPage extends StatelessWidget {
               ],
             ),
           ),
-          // Break or separator (add this)
+          // Break or separator
           Divider(
             thickness: 1.0,
             color: Colors.grey,
+          ),
+          // Daftar pesan
+          Expanded(
+            child: ListView.builder(
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                return Align(
+                  alignment: _messages[index].sender == 'You'
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: _messages[index].sender == 'You'
+                          ? Colors.blue
+                          : Colors.grey,
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    child: Text(
+                      _messages[index].text,
+                      style: TextStyle(fontSize: 16.0, color: Colors.white),
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
           // Chat input field
           Container(
@@ -462,6 +514,7 @@ class ChatPage extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
+                    controller: _controller,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       hintText: 'Type a message...',
@@ -471,9 +524,7 @@ class ChatPage extends StatelessWidget {
                 SizedBox(width: 16.0),
                 IconButton(
                   icon: Icon(Icons.send),
-                  onPressed: () {
-                    // Add send message functionality here
-                  },
+                  onPressed: _sendMessage,
                 ),
               ],
             ),
@@ -486,8 +537,9 @@ class ChatPage extends StatelessWidget {
 
 class Message {
   final String text;
+  final String sender;
 
-  Message({required this.text});
+  Message({required this.text, required this.sender});
 }
 
 class TasksPage extends StatelessWidget {
