@@ -209,7 +209,7 @@ class TotalClicksPage extends StatelessWidget {
   }
 }
 
-class MessagePage extends StatelessWidget {
+// class MessagePage extends StatelessWidget {
 //   final int counter;
 
 //   const MessagePage({Key? key, required this.counter}) : super(key: key);
@@ -218,61 +218,113 @@ class MessagePage extends StatelessWidget {
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       appBar: AppBar(
-//         title: const Text('Total Message'),
+//         title: const Text('QA Message'),
+//         actions: [
+//           IconButton(
+//             icon: Icon(Icons.search),
+//             onPressed: () {
+//               // Add search functionality here
+//             },
+//           ),
+//         ],
 //       ),
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             ScaleTransition(
-//               scale: Tween<double>(begin: 0.0, end: 1.0).animate(
-//                 CurvedAnimation(
-//                   parent: ModalRoute.of(context)!.animation!,
-//                   curve: Curves.easeInOut,
+//       body: Column(
+//         children: [
+//           // Chat header
+//           Container(
+//             padding: const EdgeInsets.all(16.0),
+//             child: Row(
+//               children: [
+//                 CircleAvatar(
+//                   radius: 24.0,
+//                   backgroundImage:
+//                       NetworkImage('https://via.placeholder.com/50'),
 //                 ),
-//               ),
-//               child: Icon(
-//                 Icons.message, // Ikon pesan
-//                 size: 64.0,
-//                 color: Colors.blue,
-//               ),
+//                 SizedBox(width: 16.0),
+//                 Text(
+//                   'Ali Bunyamnin',
+//                   style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+//                 ),
+//               ],
 //             ),
-//             SizedBox(height: 16.0),
-//             Text(
-//               'Message Clicks: $counter',
-//               style: const TextStyle(
-//                 fontSize: 24.0,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//             Text(
-//               'Klik terus dong ya',
-//               style: const TextStyle(
-//                 fontSize: 24.0,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//             SizedBox(height: 24.0), // Spacing below text
-
-//             // IconButton added below the text
-//             IconButton(
-//               icon: Icon(Icons.arrow_forward),
-//               iconSize: 48.0,
-//               color: Colors.green,
-//               onPressed: () {
-//                 // Add functionality for button press here
-//                 // Example: Navigator.push(context, MaterialPageRoute(builder: (context) => NextPage()));
+//           ),
+//           // Chat messages
+//           Expanded(
+//             child: ListView.builder(
+//               itemCount: 5, // Replace with actual message count
+//               itemBuilder: (context, index) {
+//                 return ListTile(
+//                   leading: CircleAvatar(
+//                     radius: 24.0,
+//                     backgroundImage:
+//                         NetworkImage('https://via.placeholder.com/50'),
+//                   ),
+//                   title: Text(
+//                     'Message $index',
+//                     style: TextStyle(fontSize: 16.0),
+//                   ),
+//                   subtitle: Text(
+//                     'This is a sample message',
+//                     style: TextStyle(fontSize: 14.0),
+//                   ),
+//                 );
 //               },
 //             ),
-//           ],
-//         ),
+//           ),
+//           // Chat input field
+//           Container(
+//             padding: const EdgeInsets.all(16.0),
+//             child: Row(
+//               children: [
+//                 Expanded(
+//                   child: TextField(
+//                     decoration: InputDecoration(
+//                       border: OutlineInputBorder(),
+//                       hintText: 'Type a message...',
+//                     ),
+//                   ),
+//                 ),
+//                 SizedBox(width: 16.0),
+//                 IconButton(
+//                   icon: Icon(Icons.send),
+//                   onPressed: () {
+//                     // Add send message functionality here
+//                   },
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
 //       ),
 //     );
 //   }
 // }
+
+class MessagePage extends StatefulWidget {
   final int counter;
 
   const MessagePage({Key? key, required this.counter}) : super(key: key);
+
+  @override
+  _MessagePageState createState() => _MessagePageState();
+}
+
+class _MessagePageState extends State<MessagePage> {
+  final _searchController = TextEditingController();
+  List<Message> _messages = [
+    Message(text: 'Message 1'),
+    Message(text: 'Message 2'),
+    Message(text: 'Message 3'),
+    Message(text: 'Message 4'),
+    Message(text: 'Message 5'),
+  ];
+  List<Message> _filteredMessages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredMessages = _messages;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -283,7 +335,10 @@ class MessagePage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
-              // Add search functionality here
+              // Show search bar
+              setState(() {
+                _searchController.text = '';
+              });
             },
           ),
         ],
@@ -308,10 +363,30 @@ class MessagePage extends StatelessWidget {
               ],
             ),
           ),
+          // Search bar
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Search messages...',
+              ),
+              onChanged: (query) {
+                setState(() {
+                  _filteredMessages = _messages.where((message) {
+                    return message.text
+                        .toLowerCase()
+                        .contains(query.toLowerCase());
+                  }).toList();
+                });
+              },
+            ),
+          ),
           // Chat messages
           Expanded(
             child: ListView.builder(
-              itemCount: 5, // Replace with actual message count
+              itemCount: _filteredMessages.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: CircleAvatar(
@@ -320,16 +395,65 @@ class MessagePage extends StatelessWidget {
                         NetworkImage('https://via.placeholder.com/50'),
                   ),
                   title: Text(
-                    'Message $index',
+                    _filteredMessages[index].text,
                     style: TextStyle(fontSize: 16.0),
                   ),
-                  subtitle: Text(
-                    'This is a sample message',
-                    style: TextStyle(fontSize: 14.0),
-                  ),
+                  onTap: () {
+                    // Navigate to chat page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatPage(
+                          message: _filteredMessages[index],
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ChatPage extends StatelessWidget {
+  final Message message;
+
+  const ChatPage({Key? key, required this.message}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Chat with ${message.text}'),
+      ),
+      body: Column(
+        children: [
+          // Chat header
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 24.0,
+                  backgroundImage:
+                      NetworkImage('https://via.placeholder.com/50'),
+                ),
+                SizedBox(width: 16.0),
+                Text(
+                  'Ali Bunyamnin',
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          // Break or separator (add this)
+          Divider(
+            thickness: 1.0,
+            color: Colors.grey,
           ),
           // Chat input field
           Container(
@@ -358,6 +482,12 @@ class MessagePage extends StatelessWidget {
       ),
     );
   }
+}
+
+class Message {
+  final String text;
+
+  Message({required this.text});
 }
 
 class TasksPage extends StatelessWidget {
