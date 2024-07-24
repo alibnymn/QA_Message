@@ -106,21 +106,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   _buildCard(
                     'Messages',
-                    '$_counter',
+                    '5',
                     Icons.message,
                     Color.fromARGB(255, 255, 115, 0),
                     onTap: () => _navigateToMessagePage(context),
                   ),
                   _buildCard(
                     'Tasks',
-                    '$_counter',
+                    '3',
                     Icons.assignment_turned_in,
                     Colors.green,
                     onTap: () => _navigateToTasksPage(context),
                   ),
                   _buildCard(
                     'Notifications',
-                    '$_counter',
+                    '3',
                     Icons.notifications_active,
                     Colors.red,
                     onTap: () => _navigateToNotificationsPage(context),
@@ -208,97 +208,6 @@ class TotalClicksPage extends StatelessWidget {
     );
   }
 }
-
-// class MessagePage extends StatelessWidget {
-//   final int counter;
-
-//   const MessagePage({Key? key, required this.counter}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('QA Message'),
-//         actions: [
-//           IconButton(
-//             icon: Icon(Icons.search),
-//             onPressed: () {
-//               // Add search functionality here
-//             },
-//           ),
-//         ],
-//       ),
-//       body: Column(
-//         children: [
-//           // Chat header
-//           Container(
-//             padding: const EdgeInsets.all(16.0),
-//             child: Row(
-//               children: [
-//                 CircleAvatar(
-//                   radius: 24.0,
-//                   backgroundImage:
-//                       NetworkImage('https://via.placeholder.com/50'),
-//                 ),
-//                 SizedBox(width: 16.0),
-//                 Text(
-//                   'Ali Bunyamnin',
-//                   style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-//                 ),
-//               ],
-//             ),
-//           ),
-//           // Chat messages
-//           Expanded(
-//             child: ListView.builder(
-//               itemCount: 5, // Replace with actual message count
-//               itemBuilder: (context, index) {
-//                 return ListTile(
-//                   leading: CircleAvatar(
-//                     radius: 24.0,
-//                     backgroundImage:
-//                         NetworkImage('https://via.placeholder.com/50'),
-//                   ),
-//                   title: Text(
-//                     'Message $index',
-//                     style: TextStyle(fontSize: 16.0),
-//                   ),
-//                   subtitle: Text(
-//                     'This is a sample message',
-//                     style: TextStyle(fontSize: 14.0),
-//                   ),
-//                 );
-//               },
-//             ),
-//           ),
-//           // Chat input field
-//           Container(
-//             padding: const EdgeInsets.all(16.0),
-//             child: Row(
-//               children: [
-//                 Expanded(
-//                   child: TextField(
-//                     decoration: InputDecoration(
-//                       border: OutlineInputBorder(),
-//                       hintText: 'Type a message...',
-//                     ),
-//                   ),
-//                 ),
-//                 SizedBox(width: 16.0),
-//                 IconButton(
-//                   icon: Icon(Icons.send),
-//                   onPressed: () {
-//                     // Add send message functionality here
-//                   },
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class MessagePage extends StatefulWidget {
   final int counter;
@@ -542,49 +451,146 @@ class Message {
   Message({required this.text, required this.sender});
 }
 
-class TasksPage extends StatelessWidget {
+class TasksPage extends StatefulWidget {
   final int counter;
 
   const TasksPage({super.key, required this.counter});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Total Tasks'),
-      ),
-      body: Center(
-        child: Text(
-          'Total Tasks: $counter',
-          style: const TextStyle(
-            fontSize: 24.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
+  _TasksPageState createState() => _TasksPageState();
 }
 
-class NotificationsPage extends StatelessWidget {
-  final int counter;
+class Task {
+  final String title;
+  bool isDone;
 
-  const NotificationsPage({super.key, required this.counter});
+  Task({required this.title, this.isDone = false});
+}
+
+class _TasksPageState extends State<TasksPage> {
+  final List<Task> _tasks = [
+    Task(title: 'Task 1 : Membuat chat page'),
+    Task(title: 'Task 2 : Membuat task page'),
+    Task(title: 'Task 3 : Membuat notif page'),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Total Notifications'),
+        title: const Text('Todo List jobdesk'),
       ),
-      body: Center(
-        child: Text(
-          'Total Notifications: $counter',
-          style: const TextStyle(
-            fontSize: 24.0,
-            fontWeight: FontWeight.bold,
-          ),
+      body: ListView.builder(
+        itemCount: _tasks.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(_tasks[index].title),
+            trailing: Checkbox(
+              value: _tasks[index].isDone,
+              onChanged: (value) {
+                setState(() {
+                  _tasks[index].isDone = value!;
+                });
+              },
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add new task
+          setState(() {
+            _tasks.add(Task(title: 'New Task'));
+          });
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class NotificationLog {
+  final String message;
+  final DateTime timestamp;
+
+  NotificationLog({required this.message, required this.timestamp});
+}
+
+class NotificationsPage extends StatefulWidget {
+  final int counter;
+
+  const NotificationsPage({super.key, required this.counter});
+
+  @override
+  _NotificationsPageState createState() => _NotificationsPageState();
+}
+
+class _NotificationsPageState extends State<NotificationsPage> {
+  final List<NotificationLog> _notificationLog = [
+    NotificationLog(
+      message: 'Welcome to the notification log!',
+      timestamp: DateTime.now().subtract(const Duration(days: 1)),
+    ),
+    NotificationLog(
+      message: 'You have a new message from John Doe.',
+      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+    ),
+    NotificationLog(
+      message: 'Your account has been updated.',
+      timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
+    ),
+  ];
+
+  void _addNotificationLog(String message) {
+    setState(() {
+      _notificationLog.add(NotificationLog(
+        message: message,
+        timestamp: DateTime.now(),
+      ));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Notification Log'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text(
+              'Notifications: 3',
+              style: const TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _notificationLog.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_notificationLog[index].message),
+                    subtitle: Text(
+                      '${_notificationLog[index].timestamp.hour}:${_notificationLog[index].timestamp.minute}:${_notificationLog[index].timestamp.second}',
+                      style: const TextStyle(fontSize: 12.0),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _addNotificationLog('New notification message!');
+        },
+        tooltip: 'Add new notification',
+        child: const Icon(Icons.add),
       ),
     );
   }
