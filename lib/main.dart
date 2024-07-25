@@ -12,10 +12,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'App QA',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme:
+            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 0, 255, 13)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'QA Manage Home Page'),
+      home: const MyHomePage(title: 'QA Manage Dashboard'),
     );
   }
 }
